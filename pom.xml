@@ -17,12 +17,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>io.vertx</groupId>
-    <artifactId>vertx-ext-parent</artifactId>
-    <version>26</version>
-  </parent>
-
+  <groupId>io.vertx</groupId>
   <artifactId>vertx-prometheus-metrics</artifactId>
   <version>3.4.2</version>
 
