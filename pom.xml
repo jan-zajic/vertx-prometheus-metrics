@@ -42,6 +42,19 @@
     </dependencies>
   </dependencyManagement>
 
+  <build>
+  	<plugins>
+  	 <plugin>
+        <groupId>org.bsc.maven</groupId>
+        <artifactId>maven-processor-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+        <!-- disable execution -->
+        </executions>
+     </plugin>
+  	</plugins>
+  </build>
+
   <dependencies>   
     <dependency>
       <groupId>io.vertx</groupId>
