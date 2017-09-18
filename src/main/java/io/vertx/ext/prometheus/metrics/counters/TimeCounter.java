@@ -8,18 +8,14 @@ public final class TimeCounter {
   private final @NotNull Counter counter;
   private final @NotNull Counter.Child time;
 
-  public TimeCounter(@NotNull String name, @NotNull String localAddress) {
-    counter = Counter.build("vertx_" + name + "_time", "Processing time (us)")
-        .labelNames("local_address").create();
-    time = counter.labels(localAddress);
+  public TimeCounter(@NotNull PrometheusMetrics metrics, @NotNull String name, @NotNull String localAddress) {
+  	String collectorName = "vertx_" + name + "_time";
+    counter = metrics.registerIfAbsent(collectorName, () ->  Counter.build(collectorName, "Processing time (us)").labelNames("local_address").create());
+    time = metrics.labels(collectorName, localAddress);
   }
 
   public void apply(@NotNull Stopwatch stopwatch) {
     time.inc(stopwatch.stop());
   }
 
-  public @NotNull TimeCounter register(@NotNull PrometheusMetrics metrics) {
-    metrics.register(counter);
-    return this;
-  }
 }

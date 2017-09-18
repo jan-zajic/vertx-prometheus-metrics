@@ -6,3 +6,9 @@ build/
 *.iml
 gradlew*
 gradle.properties
+/bin/
+/target/
+.classpath
+.project
+.settings
+target

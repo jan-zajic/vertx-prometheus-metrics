@@ -6,12 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 public final class WebsocketGauge {
   private final @NotNull Gauge gauge;
-  private final @NotNull Gauge.Child websockets;
-
-  public WebsocketGauge(@NotNull String name, @NotNull String localAddress) {
-    gauge = Gauge.build("vertx_" + name + "_websockets", "Websockets number")
-        .labelNames("local_address").create();
-    websockets = gauge.labels(localAddress);
+  private final @NotNull Gauge.Child websockets;  
+  private final String collectorName;
+  
+  public WebsocketGauge(@NotNull PrometheusMetrics metrics, @NotNull String name, @NotNull String localAddress) {
+  	collectorName = "vertx_" + name + "_websockets";
+    gauge = metrics.registerIfAbsent(collectorName, () -> Gauge.build(collectorName, "Websockets number").labelNames("local_address").create());
+    websockets = metrics.labels(collectorName, localAddress);
   }
 
   public void increment() {
@@ -22,8 +23,4 @@ public final class WebsocketGauge {
     websockets.dec();
   }
 
-  public @NotNull WebsocketGauge register(@NotNull PrometheusMetrics metrics) {
-    metrics.register(gauge);
-    return this;
-  }
 }

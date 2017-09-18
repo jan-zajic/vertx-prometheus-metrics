@@ -1,17 +1,18 @@
 package io.vertx.ext.prometheus.metrics;
 
-import io.prometheus.client.CollectorRegistry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
-import io.vertx.ext.prometheus.metrics.counters.Stopwatch;
-import org.jetbrains.annotations.NotNull;
+import io.vertx.ext.prometheus.VertxCollectorRegistry;
 import io.vertx.ext.prometheus.metrics.counters.EndpointMetrics;
 import io.vertx.ext.prometheus.metrics.counters.HTTPRequestMetrics;
+import io.vertx.ext.prometheus.metrics.counters.Stopwatch;
 import io.vertx.ext.prometheus.metrics.counters.WebsocketGauge;
-import org.jetbrains.annotations.Nullable;
 
 public final class HTTPClientPrometheusMetrics extends TCPPrometheusMetrics implements HttpClientMetrics<HTTPRequestMetrics.Metric, Void, Void, Void, Stopwatch> {
   private static final @NotNull String NAME = "httpclient";
@@ -20,11 +21,11 @@ public final class HTTPClientPrometheusMetrics extends TCPPrometheusMetrics impl
   private final @NotNull WebsocketGauge websockets;
   private final @NotNull HTTPRequestMetrics requests;
 
-  public HTTPClientPrometheusMetrics(@NotNull CollectorRegistry registry, @NotNull String localAddress) {
+  public HTTPClientPrometheusMetrics(@NotNull VertxCollectorRegistry registry, @NotNull String localAddress) {
     super(registry, NAME, localAddress);
-    requests = new HTTPRequestMetrics(NAME, localAddress).register(this);
-    endpoints = new EndpointMetrics(NAME, localAddress).register(this);
-    websockets = new WebsocketGauge(NAME, localAddress).register(this);
+    requests = new HTTPRequestMetrics(this, NAME, localAddress);
+    endpoints = new EndpointMetrics(this, NAME, localAddress);
+    websockets = new WebsocketGauge(this, NAME, localAddress);
   }
 
   @Override

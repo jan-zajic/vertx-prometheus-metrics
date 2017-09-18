@@ -8,18 +8,17 @@ public final class EndpointMetrics {
   private final @NotNull Gauge gauge;
   private final @NotNull TimeCounter queueTime;
   private final @NotNull String localAddress;
+  
+  private final @NotNull PrometheusMetrics metrics;
+  private final @NotNull String collectorName;
 
-  public EndpointMetrics(@NotNull String name, @NotNull String localAddress) {
+  public EndpointMetrics(@NotNull PrometheusMetrics metrics, @NotNull String name, @NotNull String localAddress) {
     this.localAddress = localAddress;
-    gauge = Gauge.build("vertx_" + name + "_endpoints", "Endpoints number")
-        .labelNames("local_address", "state").create();
-    queueTime = new TimeCounter(name + "_endpoints_queue", localAddress);
-  }
-
-  public @NotNull EndpointMetrics register(@NotNull PrometheusMetrics metrics) {
-    metrics.register(gauge);
-    queueTime.register(metrics);
-    return this;
+    this.metrics = metrics;
+    this.collectorName = "vertx_" + name + "_endpoints";
+		gauge = metrics.registerIfAbsent(collectorName, () -> Gauge.build(collectorName, "Endpoints number")
+    		.labelNames("local_address", "state").create());        
+    queueTime = new TimeCounter(metrics, name + "_endpoints_queue", localAddress);
   }
 
   public void increment() {
@@ -41,6 +40,6 @@ public final class EndpointMetrics {
   }
 
   private @NotNull Gauge.Child gauge(@NotNull String name) {
-    return gauge.labels(localAddress, name);
+    return metrics.labels(collectorName, localAddress, name);
   }
 }

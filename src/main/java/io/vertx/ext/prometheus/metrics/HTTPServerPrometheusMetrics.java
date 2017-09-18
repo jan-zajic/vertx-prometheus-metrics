@@ -1,16 +1,17 @@
 package io.vertx.ext.prometheus.metrics;
 
-import io.prometheus.client.CollectorRegistry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpServerMetrics;
+import io.vertx.ext.prometheus.VertxCollectorRegistry;
 import io.vertx.ext.prometheus.metrics.counters.HTTPRequestMetrics;
 import io.vertx.ext.prometheus.metrics.counters.WebsocketGauge;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class HTTPServerPrometheusMetrics extends TCPPrometheusMetrics implements HttpServerMetrics<HTTPRequestMetrics.Metric, Void, Void> {
   private static final @NotNull String NAME = "httpserver";
@@ -18,10 +19,10 @@ public final class HTTPServerPrometheusMetrics extends TCPPrometheusMetrics impl
   private final @NotNull HTTPRequestMetrics requests;
   private final @NotNull WebsocketGauge websockets;
 
-  public HTTPServerPrometheusMetrics(@NotNull CollectorRegistry registry, @NotNull SocketAddress localAddress) {
+  public HTTPServerPrometheusMetrics(@NotNull VertxCollectorRegistry registry, @NotNull SocketAddress localAddress) {
     super(registry, NAME, localAddress.toString());
-    websockets = new WebsocketGauge(NAME, localAddress.toString()).register(this);
-    requests = new HTTPRequestMetrics(NAME, localAddress.toString()).register(this);
+    websockets = new WebsocketGauge(this, NAME, localAddress.toString());
+    requests = new HTTPRequestMetrics(this, NAME, localAddress.toString());
   }
 
   @Override

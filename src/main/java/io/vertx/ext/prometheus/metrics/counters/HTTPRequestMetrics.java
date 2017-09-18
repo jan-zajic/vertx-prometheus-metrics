@@ -11,21 +11,18 @@ public final class HTTPRequestMetrics {
   private final @NotNull Counter responses;
   private final @NotNull TimeCounter proocessTime;
   private final @NotNull String localAddress;
+  private final @NotNull PrometheusMetrics metrics;
+	private final @NotNull String requestsCollectorName;
+	private final @NotNull String responsesCollectorName;
 
-  public HTTPRequestMetrics(@NotNull String name, @NotNull String localAddress) {
+  public HTTPRequestMetrics(@NotNull PrometheusMetrics metrics, @NotNull String name, @NotNull String localAddress) {
     this.localAddress = localAddress;
-    requests = Gauge.build("vertx_" + name + "_requests", "HTTP requests number")
-        .labelNames("local_address", "method", "path", "state").create();
-    responses = Counter.build("vertx_" + name + "_responses", "HTTP responses number")
-        .labelNames("local_address", "code").create();
-    proocessTime = new TimeCounter(name + "_requests", localAddress);
-  }
-
-  public @NotNull HTTPRequestMetrics register(@NotNull PrometheusMetrics metrics) {
-    metrics.register(requests);
-    metrics.register(responses);
-    proocessTime.register(metrics);
-    return this;
+    this.metrics = metrics;
+    this.requestsCollectorName = "vertx_" + name + "_requests";
+    requests = metrics.registerIfAbsent(requestsCollectorName, () -> Gauge.build(requestsCollectorName, "HTTP requests number").labelNames("local_address", "method", "path", "state").create());
+    this.responsesCollectorName = "vertx_" + name + "_responses";
+		responses = metrics.registerIfAbsent(responsesCollectorName, () -> Counter.build(responsesCollectorName, "HTTP responses number").labelNames("local_address", "code").create());
+    proocessTime = new TimeCounter(metrics, name + "_requests", localAddress);
   }
 
   public @NotNull Metric begin(@NotNull HttpMethod method, @NotNull String path) {
@@ -57,7 +54,7 @@ public final class HTTPRequestMetrics {
   }
 
   private @NotNull Counter.Child responses(int responseStatusCode) {
-    return responses.labels(localAddress, Integer.toString(responseStatusCode));
+    return metrics.labels(this.responsesCollectorName, localAddress, Integer.toString(responseStatusCode));
   }
 
   private @NotNull Gauge.Child requests(@NotNull HTTPRequestMetrics.@NotNull Metric metric, @NotNull String state) {
@@ -65,7 +62,7 @@ public final class HTTPRequestMetrics {
   }
 
   private @NotNull Gauge.Child requests(@NotNull String method, @NotNull String path, @NotNull String state) {
-    return requests.labels(localAddress, method, path, state);
+    return metrics.labels(this.requestsCollectorName, localAddress, method, path, state);
   }
 
   public static final class Metric {

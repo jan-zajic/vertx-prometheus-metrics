@@ -1,15 +1,16 @@
 package io.vertx.ext.prometheus.metrics;
 
-import io.prometheus.client.CollectorRegistry;
-import io.vertx.core.net.SocketAddress;
-import io.vertx.core.net.impl.SocketAddressImpl;
-import io.vertx.core.spi.metrics.DatagramSocketMetrics;
-import io.vertx.ext.prometheus.metrics.counters.BytesCounter;
-import io.vertx.ext.prometheus.metrics.counters.ErrorCounter;
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
+import io.vertx.core.net.SocketAddress;
+import io.vertx.core.net.impl.SocketAddressImpl;
+import io.vertx.core.spi.metrics.DatagramSocketMetrics;
+import io.vertx.ext.prometheus.VertxCollectorRegistry;
+import io.vertx.ext.prometheus.metrics.counters.BytesCounter;
+import io.vertx.ext.prometheus.metrics.counters.ErrorCounter;
 
 public final class DatagramSocketPrometheusMetrics extends PrometheusMetrics implements DatagramSocketMetrics {
   private static final @NotNull String NAME = "datagram_socket";
@@ -19,11 +20,11 @@ public final class DatagramSocketPrometheusMetrics extends PrometheusMetrics imp
 
   private volatile @Nullable SocketAddress namedLocalAddress;
 
-  public DatagramSocketPrometheusMetrics(@NotNull CollectorRegistry registry) {
+  public DatagramSocketPrometheusMetrics(@NotNull VertxCollectorRegistry registry) {
     super(registry);
     final Supplier<String> localAddress = () -> String.valueOf(namedLocalAddress);
-    bytes = new BytesCounter(NAME, localAddress).register(this);
-    errors = new ErrorCounter(NAME, localAddress).register(this);
+    bytes = new BytesCounter(this, NAME, localAddress);
+    errors = new ErrorCounter(this, NAME, localAddress);
   }
 
   @Override
