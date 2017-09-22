@@ -24,7 +24,7 @@ public final class ErrorCounter {
   }
 
   public void increment(@NotNull Throwable throwable) {
-    counter.labels(collectorName, localAddress.get(), throwable.getClass().getSimpleName()).inc();
+    counter.labels(localAddress.get(), throwable.getClass().getSimpleName()).inc();
   }
   
 }
