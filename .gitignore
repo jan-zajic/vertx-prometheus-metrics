@@ -12,3 +12,4 @@ gradle.properties
 .project
 .settings
 target
+/.gradle/

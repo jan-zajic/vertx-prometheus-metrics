@@ -9,19 +9,17 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 
-import io.prometheus.client.Counter;
-import io.prometheus.client.Gauge;
 import io.prometheus.client.SimpleCollector;
 import io.vertx.core.spi.metrics.Metrics;
 import io.vertx.ext.prometheus.NamedCollector;
 import io.vertx.ext.prometheus.VertxCollectorRegistry;
 
-public abstract class PrometheusMetrics implements Metrics {
+public class PrometheusMetrics implements Metrics {
 	
 	private final VertxCollectorRegistry registry;
 	private final Map<List<String>, String> childrens = new ConcurrentHashMap<List<String>, String>();
 
-  protected PrometheusMetrics(@NotNull VertxCollectorRegistry registry) {
+  public PrometheusMetrics(@NotNull VertxCollectorRegistry registry) {
     this.registry = registry;
   }
 

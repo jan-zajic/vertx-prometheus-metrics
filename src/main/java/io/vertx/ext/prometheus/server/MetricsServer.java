@@ -12,10 +12,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
-public enum MetricsServer {
-  ;
+public final class MetricsServer {
+  
   private static final @NotNull Logger log = LoggerFactory.getLogger(MetricsServer.class);
 
+  private MetricsServer() {}
+  
   public static @NotNull Function<CollectorRegistry, Function<SocketAddress, Closeable>> create(@NotNull Vertx vertx) {
     final HttpServer server = vertx.createHttpServer();
     final Router router = Router.router(vertx);

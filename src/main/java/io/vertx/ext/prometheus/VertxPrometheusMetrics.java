@@ -129,6 +129,10 @@ public final class VertxPrometheusMetrics extends DummyVertxMetrics {
         : super.createMetrics(pool, poolType, poolName, maxPoolSize);
   }
 
+  public PrometheusMetrics createMetrics() {
+  	return new PrometheusMetrics(vertxCollectorRegistry);
+  }
+  
   @Override
   public boolean isMetricsEnabled() {
     return true;
