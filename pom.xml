@@ -13,10 +13,10 @@
 
 	<groupId>io.vertx</groupId>
 	<artifactId>vertx-prometheus-metrics</artifactId>
-	<version>3.4.2</version>
+	<version>3.5.4.1</version>
 
 	<properties>
-		<stack.version>3.4.2</stack.version>
+		<stack.version>3.5.4</stack.version>
 	</properties>
 
 	<dependencyManagement>
